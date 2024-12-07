@@ -1,6 +1,7 @@
-
 pandas
 ydata-profiling
+streamlit
+openpyxl
 setuptools
 streamlit
 
