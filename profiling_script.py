@@ -1,19 +1,30 @@
-# Import necessary libraries
+import streamlit as st
 import pandas as pd
 from ydata_profiling import ProfileReport
-from google.colab import files
 
-# Load your dataset (replace with your dataset file path)
-file_path = '/content/Store_Management_System.xlsm'  # Replace with your Excel file path
-df = pd.read_excel(file_path)
+# Streamlit app
+st.title("Dataset Profiling App")
 
-# Generate the profiling report
-profile = ProfileReport(df, title="Dataset Profiling Report", explorative=True)
-
-# Save the report to an HTML file
-output_file = "/content/dataset_profile_report.html"
-profile.to_file(output_file)
-
-# Download the file directly to your device
-print(f"Profiling report saved as: {output_file}")
-files.download(output_file)  # Triggers the download in Colab
+# File upload
+uploaded_file = st.file_uploader("Upload your Excel file", type=["xls", "xlsx", "xlsm"])
+if uploaded_file is not None:
+    # Load the dataset
+    df = pd.read_excel(uploaded_file)
+    st.write("Preview of Uploaded Data:")
+    st.write(df.head())
+    
+    # Generate profiling report
+    if st.button("Generate Profile Report"):
+        with st.spinner("Generating report..."):
+            profile = ProfileReport(df, title="Dataset Profiling Report", explorative=True)
+            profile_path = "dataset_profile_report.html"
+            profile.to_file(profile_path)
+        
+        # Provide download link
+        with open(profile_path, "rb") as file:
+            btn = st.download_button(
+                label="Download Profiling Report",
+                data=file,
+                file_name="dataset_profile_report.html",
+                mime="text/html"
+            )
